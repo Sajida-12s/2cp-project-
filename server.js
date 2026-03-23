@@ -4,9 +4,17 @@ const rateLimit = require("express-rate-limit");
 const authRoutes = require("./routes/auth");
 // for logging
 const { requestLogger } = require("./middleware/Logmiddleware");
+const http = require("http");
 require("dotenv").config();
+const { initSocket } = require("./socket");
 
 const app = express();
+const Server = http.createServer(app);
+
+initSocket(Server);
+app.use(express.json());    
+app.use('/api/comments', require('./routes/comments.routes'));
+app.use('/api/notifications', require('./routes/notifications.routes'));
 
 // Request logging middleware (must be first)
 app.use(requestLogger);
@@ -20,6 +28,8 @@ const limiter = rateLimit({
     max: 100, // limit each IP to 100 requests per windowMs
     message: "Too many requests from this IP, please try again later."
 });
+
+
 app.use("/api/auth", limiter);
 
 app.use(express.json());

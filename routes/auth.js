@@ -2,6 +2,9 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const db = require("../db");
+const { logger } = require("../middleware/Logmiddleware");
+
+
 
 const router = express.Router();
 
@@ -50,7 +53,7 @@ router.post("/signin", async (req, res) => {
         });
 
     } catch (error) {
-        console.error(error);
+      logger.error(error);
         res.status(500).json({ message: "Server error" });
     }
 });
