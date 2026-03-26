@@ -11,10 +11,12 @@ const { initSocket } = require("./socket");
 const app = express();
 const Server = http.createServer(app);
 
+const registerRoutes = require("./routes/register");
+
 initSocket(Server);
 app.use(express.json());    
-app.use('/api/comments', require('./routes/comments.routes'));
-app.use('/api/notifications', require('./routes/notifications.routes'));
+app.use('/api/comments', require('./routes/comments'));
+app.use('/api/notifications', require('./routes/notifications'));
 
 // Request logging middleware (must be first)
 app.use(requestLogger);
@@ -36,6 +38,8 @@ app.use(express.json());
 
 app.use("/api/auth", authRoutes);
 
-app.listen(5000, () => {
+app.use("/api/auth", registerRoutes);
+
+Server.listen(5000, () => {
     console.log("Server running on port 5000");
 });

@@ -4,6 +4,7 @@ const router  = express.Router();
 const pool    = require('../db');          // your pg Pool instance
 const { getIO } = require('../socket');
 const authMiddleware = require('../middleware/auth'); // your existing JWT middleware
+const { logger } = require("../middleware/Logmiddleware");
 
 // POST /api/comments — user posts a comment on an employee profile
 router.post('/', authMiddleware, async (req, res) => {
@@ -40,7 +41,7 @@ router.post('/', authMiddleware, async (req, res) => {
 
     res.status(201).json({ success: true, comment });
   } catch (err) {
-    console.error(err);
+    logger.error(err);
     res.status(500).json({ error: 'Failed to post comment' });
   }
 });

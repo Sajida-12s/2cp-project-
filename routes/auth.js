@@ -28,6 +28,11 @@ router.post("/signin", async (req, res) => {
 
         const employee = rows[0];
 
+        // Check if email is verified 
+       if (!employee.is_verified) {
+        return res.status(401).json({ message: "Please verify your email first" });
+    }
+
         // 2️
         const isMatch = await bcrypt.compare(password, employee.password);
 

@@ -1,32 +1,33 @@
-const {server}= require('socket.io');
-const { http } = require('winston');
+const { Server } = require('socket.io');
 
 let io;
 
-function initSocket(server) {
-    io= new server(httpServer, {
-        cors:{origin:"*" }
+function initSocket(httpServer) {
+  io = new Server(httpServer, {
+    cors: { origin: '*' },
+  });
+
+  io.on('connection', (socket) => {
+    console.log('Client connected', socket.id);
+
+    socket.on('join', ({ employeeId }) => {
+      socket.join(`employee_${employeeId}`);
+      console.log(`Employee ${employeeId} joined their room`);
     });
 
-    io.on('connection', (socket) => {
-        //Employee get connected somehow 
-        socket.on('join',({employeeId})=>{
-            socket.join(`employee_${employeeId}`);
-            console.log(`Employee ${employeeId} joined their room`);
-        });
-        socket.on('disconnect',()=>{
-            console.log('Client disconnected');
-        });
+    socket.on('disconnect', () => {
+      console.log('Client disconnected', socket.id);
     });
-return io;
+  });
+
+  return io;
 }
 
-function getIO(){
-    if(!io){
-        throw new Error('Socket.io not initialized');
-        return io;
-    }
-
+function getIO() {
+  if (!io) {
+    throw new Error('Socket.io not initialized');
+  }
+  return io;
 }
 
-module.exports={initSocket,getIO};
+module.exports = { initSocket, getIO };

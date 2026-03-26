@@ -40,4 +40,5 @@ router.patch('/read-all', authMiddleware, async (req, res) => {
   res.json({ success: true });
 });
 
+
 module.exports = router;
