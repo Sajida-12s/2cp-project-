@@ -8,6 +8,8 @@ const http = require("http");
 require("dotenv").config();
 const { initSocket } = require("./socket");
 
+const rating = require('./routes/rating');
+
 const app = express();
 const Server = http.createServer(app);
 
@@ -39,6 +41,8 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 
 app.use("/api/auth", registerRoutes);
+
+app.use('/api/ratings', rating);
 
 Server.listen(5000, () => {
     console.log("Server running on port 5000");
