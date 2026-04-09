@@ -15,7 +15,7 @@ router.post('/', authMiddleware, async (req, res) => {
   try {
     // 1. Get the appointment
     const [rows] = await db.query(
-      'SELECT * FROM evenment WHERE id = ?',
+      'SELECT * FROM evenements WHERE id = ?',
       [appointment_id]
     );
 
@@ -31,7 +31,7 @@ router.post('/', authMiddleware, async (req, res) => {
     }
 
     // 3. Block if consultation
-    if (booking.appointment === 'consultation') {
+    if (booking.appointemet === 'consultation') {
       return res.status(403).json({ error: 'Consultation cannot be rated' });
     }
 
@@ -50,23 +50,22 @@ router.post('/', authMiddleware, async (req, res) => {
       return res.status(409).json({ error: 'Already rated' });
     }
 
-    // 6. Save rating
+    // 6. Save rating using worker_id
     await db.query(
-      'INSERT INTO ratings (appointment_id, worker_name, rating) VALUES (?, ?, ?)',
-      [appointment_id, booking.workerSelect, rating]
+      'INSERT INTO ratings (appointment_id, worker_id, rating) VALUES (?, ?, ?)',
+      [appointment_id, booking.worker_id, rating]
     );
 
-    // 7. Update worker average
+    // 7. Update worker average using worker_id (no more name matching)
     await db.query(
-      `UPDATE workers 
+      `UPDATE employees 
        SET avg_rating = (
          SELECT AVG(r.rating) 
          FROM ratings r 
-         JOIN evenment e ON r.appointment_id = e.id 
-         WHERE e.workerSelect = ?
+         WHERE r.worker_id = ?
        ) 
-       WHERE name = ?`,
-      [booking.workerSelect, booking.workerSelect]
+       WHERE id = ?`,
+      [booking.worker_id, booking.worker_id]
     );
 
     res.json({ success: true });
