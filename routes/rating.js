@@ -20,52 +20,65 @@ router.post('/', authMiddleware, async (req, res) => {
     );
 
     const booking = rows[0];
-
     if (!booking) {
       return res.status(404).json({ error: 'Appointment not found' });
     }
 
-    // 2. Make sure the logged-in user owns this appointment
-    if (booking.user_id !== req.user.id) {
-      return res.status(403).json({ error: 'Not your appointment' });
-    }
-
-    // 3. Block if consultation
+    // 2. Block if consultation
     if (booking.appointemet === 'consultation') {
       return res.status(403).json({ error: 'Consultation cannot be rated' });
     }
 
-    // 4. Block if job not done yet
-    if (booking.job_done !== 'Oui') {
-      return res.status(403).json({ error: 'Job not completed yet' });
-    }
-
-    // 5. Block if already rated
-    const [existing] = await db.query(
-      'SELECT id FROM ratings WHERE appointment_id = ?',
+    // 3. Check payment was made AND no rating yet
+    const [paymentRows] = await db.query(
+      'SELECT payement, RateStars, employee_selected FROM paymentandrate WHERE appointemnt_id = ?',
       [appointment_id]
     );
 
-    if (existing.length > 0) {
+    // No payment row at all
+    if (!paymentRows[0]) {
+      return res.status(403).json({ error: 'Cannot rate before payment is made' });
+    }
+
+    // Payment not done yet
+    if (paymentRows[0].payement === 0) {
+      return res.status(403).json({ error: 'Cannot rate before payment is made' });
+    }
+
+    // Already rated
+    if (paymentRows[0].RateStars !== 0) {
       return res.status(409).json({ error: 'Already rated' });
     }
 
-    // 6. Save rating using worker_id
-    await db.query(
-      'INSERT INTO ratings (appointment_id, worker_id, rating) VALUES (?, ?, ?)',
-      [appointment_id, booking.worker_id, rating]
+    // 4. Resolve worker ID from employee table
+    const [empRows] = await db.query(
+      `SELECT id FROM employee 
+       WHERE CONCAT(first_name, ' ', family_name) = ?`,
+      [booking.workerSelect]
     );
 
-    // 7. Update worker average using worker_id (no more name matching)
+    if (!empRows[0]) {
+      return res.status(404).json({ error: 'Worker not found' });
+    }
+
+    const workerId = empRows[0].id;
+
+    // 5. Save the rating by updating the existing payment row
     await db.query(
-      `UPDATE employees 
+      'UPDATE paymentandrate SET RateStars = ?, employee_selected = ? WHERE appointemnt_id = ?',
+      [rating, workerId, appointment_id]
+    );
+
+    // 6. Update worker average rating
+    await db.query(
+      `UPDATE employee 
        SET avg_rating = (
-         SELECT AVG(r.rating) 
-         FROM ratings r 
-         WHERE r.worker_id = ?
+         SELECT AVG(RateStars) 
+         FROM paymentandrate 
+         WHERE employee_selected = ?
        ) 
        WHERE id = ?`,
-      [booking.worker_id, booking.worker_id]
+      [workerId, workerId]
     );
 
     res.json({ success: true });

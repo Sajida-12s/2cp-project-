@@ -1,9 +1,0 @@
-{"level":"info","message":"POST /signein - IP: ::ffff:127.0.0.1 - User-Agent: Thunder Client (https://www.thunderclient.com)","service":"employee-auth-api","timestamp":"2026-03-12T10:38:34.797Z"}
-{"level":"info","message":"POST /api/auth/register - IP: ::ffff:127.0.0.1 - User-Agent: Thunder Client (https://www.thunderclient.com)","service":"employee-auth-api","timestamp":"2026-03-26T14:21:50.150Z"}
-{"level":"info","message":"POST /api/register - IP: ::ffff:127.0.0.1 - User-Agent: Thunder Client (https://www.thunderclient.com)","service":"employee-auth-api","timestamp":"2026-03-26T14:22:07.349Z"}
-{"level":"info","message":"POST /api/auth/register - IP: ::ffff:127.0.0.1 - User-Agent: Thunder Client (https://www.thunderclient.com)","service":"employee-auth-api","timestamp":"2026-03-26T14:24:15.389Z"}
-{"level":"info","message":"POST /api/auth/register - IP: ::ffff:127.0.0.1 - User-Agent: Thunder Client (https://www.thunderclient.com)","service":"employee-auth-api","timestamp":"2026-03-26T14:42:09.637Z"}
-{"level":"info","message":"POST /api/auth/verify-otp - IP: ::ffff:127.0.0.1 - User-Agent: Thunder Client (https://www.thunderclient.com)","service":"employee-auth-api","timestamp":"2026-03-26T14:46:18.603Z"}
-{"level":"info","message":"POST /api/auth/signein - IP: ::ffff:127.0.0.1 - User-Agent: Thunder Client (https://www.thunderclient.com)","service":"employee-auth-api","timestamp":"2026-03-26T14:47:30.613Z"}
-{"level":"info","message":"POST /api/auth/signein - IP: ::ffff:127.0.0.1 - User-Agent: Thunder Client (https://www.thunderclient.com)","service":"employee-auth-api","timestamp":"2026-03-26T14:53:44.700Z"}
-{"level":"info","message":"POST /api/auth/signin - IP: ::ffff:127.0.0.1 - User-Agent: Thunder Client (https://www.thunderclient.com)","service":"employee-auth-api","timestamp":"2026-03-26T14:54:02.811Z"}
