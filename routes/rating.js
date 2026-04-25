@@ -24,18 +24,23 @@ router.post('/', authMiddleware, async (req, res) => {
       return res.status(404).json({ error: 'Appointment not found' });
     }
 
-    // 2. Block if consultation
+    //3 verifying the user own that bla bla 
+    const{first_name,family_name }=req.user;
+    if (booking.first_name!== first_name || booking.family_name!== family_name){
+      return res.status(403).json({error : 'Not authorized to rate this appointment'})
+    }
+    // 4. Block if consultation
     if (booking.appointemet === 'consultation') {
       return res.status(403).json({ error: 'Consultation cannot be rated' });
     }
 
-    // 3. Check payment was made AND no rating yet
+    // 5. Check payment was made AND no rating yet
     const [paymentRows] = await db.query(
       'SELECT payement, RateStars, employee_selected FROM paymentandrate WHERE appointemnt_id = ?',
       [appointment_id]
     );
 
-    // No payment row at all
+    // No payment yet
     if (!paymentRows[0]) {
       return res.status(403).json({ error: 'Cannot rate before payment is made' });
     }
@@ -46,7 +51,7 @@ router.post('/', authMiddleware, async (req, res) => {
     }
 
     // Already rated
-    if (paymentRows[0].RateStars !== 0) {
+    if ( paymentRows[0].RateStars !==null && paymentRows[0].RateStars !== 0) {
       return res.status(409).json({ error: 'Already rated' });
     }
 
